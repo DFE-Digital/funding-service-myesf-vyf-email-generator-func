@@ -1,0 +1,23 @@
+{
+  "version": "2.0",
+  "logging": {
+    "logLevel": {
+      "default": "Information",
+      "Pds.VYF.EmailGenerator": "Information"
+    },
+    "Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerProvider": {
+      "logLevel": {
+        "default": "Information",
+        "Pds.VYF.EmailGenerator": "Information"
+      }
+    },
+    "applicationInsights": {
+      "samplingSettings": {
+        "isEnabled": true,
+        "excludedTypes": "Request"
+      },
+      "enableLiveMetricsFilters": true
+    }
+  },
+  "functionTimeout": "02:00:00"
+}

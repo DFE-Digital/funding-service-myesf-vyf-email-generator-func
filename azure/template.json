@@ -1,0 +1,580 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceEnvironmentName": {
+            "type": "string",
+            "metadata": {
+                "description": "Short name of the environment. Used for the name of resources created."
+            }
+        },
+        "serviceName": {
+            "type": "string",
+            "metadata": {
+                "description": "Short name of the service. Used for the name of resources created."
+            }
+        },
+        "ASPNETCORE_ENVIRONMENT": {
+            "type": "string"
+        },
+        "sharedResourceGroupName": {
+            "type": "string"
+        },
+        "sharedAppInsightsName": {
+            "type": "string"
+        },
+        "sharedStorageAccountName": {
+            "type": "string"
+        },
+        "sharedServiceBusName": {
+            "type": "string"
+        },
+        "serviceBusAccessKeyName": {
+            "type": "string"
+        },
+        "sharedKeyVaultName": {
+          "type": "string",
+          "defaultValue": ""
+        },
+        "queueName": {
+            "type": "string"
+        },
+        "sharedCosmosDbName": {
+            "type": "string"
+        },
+        "cosmosFundingGroupCollectionName": {
+            "type": "string",
+            "defaultValue": "funding"
+        },
+        "cosmosProviderFundingCollectionName": {
+            "type": "string",
+            "defaultValue": "providerfunding"
+        },
+        "cosmosAuditCollectionName": {
+            "type": "string",
+            "defaultValue": "audit"
+        },
+        "cosmosMaxItemCount": {
+            "type": "int",
+            "defaultValue": 100
+        },
+        "storageConfigMaxPerPage": {
+            "type": "int",
+            "defaultValue": 50
+        },
+        "storageConfigNotifyServiceTemplateTable": {
+            "type": "string",
+            "defaultValue": "NotifyServiceTemplateDetails"
+        },
+        "vyfUIApiConfigBaseUrl": {
+          "type": "string"
+        },        
+        "dfeSignInClientId": {
+            "type": "string"        
+        },
+        "dfeSignInUrl": {
+            "type": "string"            
+        },        
+        "serviceConfigEmailRunMode": {
+            "type": "string"
+        },
+        "TestEmailAddresses": {
+            "type": "string",
+            "defaultValue": "graeme.malone@education.gov.uk"
+        },
+        "InternalEmailAddresses": {
+            "type": "string",
+            "defaultValue": "graeme.malone@education.gov.uk"
+        },
+        "serviceConfigEmailPublishBatchSize": {
+            "type": "int",
+            "defaultValue": 50
+        },
+        "serviceConfigParentSearchBatchSize": {
+            "type": "int",
+            "defaultValue": 20
+        },
+        "serviceConfigUIBaseUrl": {
+            "type": "string"            
+        },
+        "serviceConfigEmailChildNewFunding": {
+            "type": "string"
+        },
+        "serviceConfigEmailChildUpdatedFunding": {
+            "type": "string"
+        },
+        "serviceConfigEmailParentNewFunding": {
+            "type": "string"
+        },
+        "serviceConfigEmailParentUpdatedFunding": {
+            "type": "string"
+        },
+        "serviceConfigEmailParentNewUpdatedFunding": {
+            "type": "string"
+        },
+        "serviceConfigFundingFilterVariationReasons": {
+            "type": "string",
+            "defaultValue": "LegalNameFieldUpdated,TrustCodeFieldUpdated,FundingUpdated,ProfilingUpdated,CalculationValuesUpdated,DateOpenedFieldUpdated,DateClosedFieldUpdated,TrustStatusFieldUpdated"
+        },        
+        "ActionGroupName": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "aspSize": {
+            "type": "string",
+            "defaultValue": "2"
+        },
+        "aspInstances": {
+            "type": "int",
+            "defaultValue": 1
+        },                
+        "aspTier": {
+            "type": "string",
+            "defaultValue": "Standard"
+        },
+        "HttpServerErrorAlertThreshhold": {
+            "type": "string",
+            "defaultValue": "50"
+        },        
+        "AverageResponseTimeAlertThreshhold": {
+            "type": "string",
+            "defaultValue": "2"
+        },
+        "RequestCountAlertThreshhold": {
+            "type": "string",
+            "defaultValue": "1000"
+        },        
+        "CPUPercentageAlertThreshhold": {
+            "type": "string",
+            "defaultValue": "75"
+        },
+        "MemoryPercentageAlertThreshhold": {
+            "type": "string",
+            "defaultValue": "75"
+        },
+      "timerInterval": {
+        "type": "string",
+        "defaultValue": "0 20,50 8-18 * * 1-5"
+      }        
+    },
+    "variables": {
+        "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/funding-platform-building-blocks/master/templates/",
+        "resourceNamePrefix": "[toLower(concat('pds-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
+        "functionAppServiceName": "[concat(variables('resourceNamePrefix'), 'wkr-fa')]",
+        "appServicePlanName": "[concat(variables('resourceNamePrefix'), 'wkr-asp')]",
+        "EnableAlertsAndMetrics": "[equals(parameters('resourceEnvironmentName'), 'release')]",
+        "AppServiceMetricsToAlertUpon": [
+            {
+                "MetricName": "Http5xx",
+                "Operator": "GreaterThanOrEqual",
+                "Threshold": "[parameters('HttpServerErrorAlertThreshhold')]",
+                "TimeWindow": "PT5M",
+                "Aggregation": "Total"
+            },
+            {
+                "MetricName": "AverageResponseTime",
+                "Operator": "GreaterThanOrEqual",
+                "Threshold": "[parameters('AverageResponseTimeAlertThreshhold')]",
+                "TimeWindow": "PT5M",
+                "Aggregation": "Average"
+            },
+            {
+                "MetricName": "Requests",
+                "Operator": "GreaterThanOrEqual",
+                "Threshold": "[parameters('RequestCountAlertThreshhold')]",
+                "TimeWindow": "PT5M",
+                "Aggregation": "Average"
+            }
+        ],
+        "AppServicePlanMetricsToAlertUpon": [
+            {
+                "MetricName": "CpuPercentage",
+                "Operator": "GreaterThanOrEqual",
+                "Threshold": "[parameters('CPUPercentageAlertThreshhold')]",
+                "TimeWindow": "PT5M",
+                "Aggregation": "Average"
+            },
+            {
+                "MetricName": "MemoryPercentage",
+                "Operator": "GreaterThanOrEqual",
+                "Threshold": "[parameters('MemoryPercentageAlertThreshhold')]",
+                "TimeWindow": "PT5M",
+                "Aggregation": "Average"
+            }
+        ]
+    },
+    "resources": [
+        {
+            "apiVersion": "2017-05-10",
+            "name": "app-service-plan",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'app-service-plan.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "appServicePlanName": {
+                        "value": "[variables('appServicePlanName')]"
+                    },
+                    "aspSize": {
+                        "value": "[parameters('aspSize')]"
+                    },
+                    "aspInstances": {
+                        "value": "[parameters('aspInstances')]"
+                    },
+                    "nonASETier": {
+                        "value": "[parameters('aspTier')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "app-service",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'function-app.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "functionAppName": {
+                        "value": "[variables('functionAppServiceName')]"
+                    },
+                    "appServicePlanName": {
+                        "value": "[variables('appServicePlanName')]"
+                    },
+                    "appServicePlanResourceGroup": {
+                        "value": "[resourceGroup().name]"
+                    },
+                    "functionAppAppSettings": {
+                      "value": [
+                        {
+                          "name": "ASPNETCORE_ENVIRONMENT",
+                          "value": "[parameters('ASPNETCORE_ENVIRONMENT')]"
+                        },
+                        {
+                          "name": "AzureWebJobsStorage",
+                          "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('sharedStorageAccountName'),';AccountKey=',listKeys(resourceId(parameters('sharedResourceGroupName'),'Microsoft.Storage/storageAccounts',parameters('sharedStorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
+                        },
+                        {
+                          "name": "FUNCTIONS_EXTENSION_VERSION",
+                          "value": "~4"
+                        },                        
+                        {
+                          "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                          "value": "[reference(resourceId(parameters('sharedResourceGroupName'), 'microsoft.insights/components', parameters('sharedAppInsightsName')),'2015-05-01').InstrumentationKey]"
+                        },
+                        {
+                          "name": "PdsApplicationInsights:InstrumentationKey",
+                          "value": "[reference(resourceId(parameters('sharedResourceGroupName'), 'microsoft.insights/components', parameters('sharedAppInsightsName')),'2015-05-01').InstrumentationKey]"
+                        },
+                        {
+                          "name": "PdsApplicationInsights:Environment",
+                          "value": "[parameters('resourceEnvironmentName')]"
+                        },
+                        {
+                          "name": "Logging:ApplicationInsights:Loglevel:Default",
+                          "value": "Information"
+                        },
+                        {
+                          "name": "Logging:ApplicationInsights:Loglevel:Microsoft",
+                          "value": "Error"
+                        },
+                        {
+                          "name": "Logging:LogLevel:Default",
+                          "value": "Information"
+                        },
+                        {
+                          "name": "FUNCTIONS_WORKER_RUNTIME",
+                          "value": "dotnet-isolated"
+                        },
+                        {
+                          "name": "ServiceBusClientConfiguration:ServiceBusConnection",
+                          "value": "[listKeys(resourceId(parameters('sharedResourceGroupName'),'Microsoft.ServiceBus/namespaces/AuthorizationRules',parameters('sharedServiceBusName'), parameters('serviceBusAccessKeyName')),'2015-08-01').primaryConnectionString]"
+                        },
+                        {
+                          "name": "ServiceBusClientConfiguration:QueueName",
+                          "value": "[parameters('queueName')]"
+                        },
+                        {
+                          "name": "CosmosDBConfiguration:AccountEndpoint",
+                          "value": "[concat('https://', parameters('sharedCosmosDbName'), '.documents.azure.com')]"
+                        },
+                        {
+                          "name": "CosmosDBConfiguration:AccountKey",
+                          "value": "[listKeys(resourceId(parameters('sharedResourceGroupName'),'Microsoft.DocumentDB/databaseAccounts', parameters('sharedCosmosDbName')), '2015-04-08').primaryMasterKey]"
+                        },
+                        {
+                          "name": "CosmosDBConfiguration:Database",
+                          "value": "funding"
+                        },
+                        {
+                          "name": "CosmosDBConfiguration:FundingGroupCollectionName",
+                          "value": "[parameters('cosmosFundingGroupCollectionName')]"
+                        },
+                        {
+                          "name": "CosmosDBConfiguration:ProviderFundingCollectionName",
+                          "value": "[parameters('cosmosProviderFundingCollectionName')]"
+                        },
+                        {
+                          "name": "CosmosDBConfiguration:AuditCollectionName",
+                          "value": "[parameters('cosmosAuditCollectionName')]"
+                        },
+                        {
+                          "name": "CosmosDBConfiguration:MaxItemCount",
+                          "value": "[parameters('cosmosMaxItemCount')]"
+                        },
+                        {
+                          "name": "AzureStorageConfiguration:ConnectionString",
+                          "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('sharedStorageAccountName'),';AccountKey=',listKeys(resourceId(parameters('sharedResourceGroupName'),'Microsoft.Storage/storageAccounts',parameters('sharedStorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
+                        },
+                        {
+                          "name": "AzureStorageConfiguration:ControlTableName",
+                          "value": "VYFEmailControlTable"
+                        },
+                        {
+                          "name": "AzureStorageConfiguration:ChildAuditTableName",
+                          "value": "VYFEmailChildAuditTable"
+                        },
+                        {
+                          "name": "AzureStorageConfiguration:ParentAuditTableName",
+                          "value": "VYFEmailParentAuditTable"
+                        },
+                        {
+                          "name": "AzureStorageConfiguration:MaxPerPage",
+                          "value": "[parameters('storageConfigMaxPerPage')]"
+                        },
+                        {
+                          "name": "AzureStorageConfiguration:NotifyServiceTemplateTable",
+                          "value": "[parameters('storageConfigNotifyServiceTemplateTable')]"
+                        },
+                        {
+                          "name": "VYFUIApiConfiguration:BaseUri",
+                          "value": "[parameters('vyfUIApiConfigBaseUrl')]"
+                        },
+                        {
+                          "name": "VYFUIApiConfiguration:ApiKey",
+                          "value": "[concat('@Microsoft.KeyVault(VaultName=', parameters('sharedKeyVaultName'), ';SecretName=VyfUiApiConfigurationSecretKey)')]"
+                        },
+                        {
+                          "name": "VYFUIApiConfiguration:EmailEnabledFundingStreamAndPeriodsEndpointUri",
+                          "value": "view-latest-funding/api/external/getEmailEnabledFundingStreamAndPeriods"
+                        },
+                        {
+                          "name": "VYFUIApiConfiguration:LatestFundingStreamPublishedDateEndpointUri",
+                          "value": "view-latest-funding/api/Publication/LatestFundingStreamPublishedDate"
+                        },
+                        {
+                          "name": "DfESignin:PublicApi:ClientID",
+                          "value": "[parameters('dfeSignInClientId')]"
+                        },
+                        {
+                          "name": "DfESignin:PublicApi:Url",
+                          "value": "[parameters('dfeSignInUrl')]"
+                        },
+                        {
+                          "name": "DfESignin:PublicApi:ClientSecret",
+                          "value": "[concat('@Microsoft.KeyVault(VaultName=', parameters('sharedKeyVaultName'), ';SecretName=DfESigninPublicApiClientSecret)')]"
+                        },
+                        {
+                          "name": "ServiceConfiguration:EmailRunMode",
+                          "value": "[parameters('serviceConfigEmailRunMode')]"
+                        },
+                        {
+                          "name": "ServiceConfiguration:TestEmailAddresses",
+                          "value": "[parameters('TestEmailAddresses')]"
+                        },
+                        {
+                          "name": "ServiceConfiguration:InternalEmailAddresses",
+                          "value": "[parameters('InternalEmailAddresses')]"
+                        },
+                        {
+                          "name": "ServiceConfiguration:RequestingService",
+                          "value": "VYF"
+                        },
+                        {
+                          "name": "ServiceConfiguration:NotifyApiKeySecretName",
+                          "value": "MyesfService"
+                        },
+                        {
+                          "name": "ServiceConfiguration:EmailPublishedBatchSize",
+                          "value": "[parameters('serviceConfigEmailPublishBatchSize')]"
+                        },
+                        {
+                          "name": "ServiceConfiguration:ParentSearchBatchSize",
+                          "value": "[parameters('serviceConfigParentSearchBatchSize')]"
+                        },
+                        {
+                          "name": "ServiceConfiguration:UIBaseUri",
+                          "value": "[parameters('serviceConfigUIBaseUrl')]"
+                        },
+                        {
+                          "name": "ServiceConfiguration:UIParentUrl",
+                          "value": "/view-latest-funding/pre-16-16-19-statements/parent"
+                        },
+                        {
+                          "name": "ServiceConfiguration:UIChildUrl",
+                          "value": "/view-latest-funding/pre-16-16-19-statements/{0}/{1}/{2}/{3}-to-{4}"
+                        },
+                        {
+                          "name": "ServiceConfiguration:EmailTemplates:ChildNewFunding",
+                          "value": "[parameters('serviceConfigEmailChildNewFunding')]"
+                        },
+                        {
+                          "name": "ServiceConfiguration:EmailTemplates:ChildUpdatedFunding",
+                          "value": "[parameters('serviceConfigEmailChildUpdatedFunding')]"
+                        },
+                        {
+                          "name": "ServiceConfiguration:EmailTemplates:ParentNewFundings",
+                          "value": "[parameters('serviceConfigEmailParentNewFunding')]"
+                        },
+                        {
+                          "name": "ServiceConfiguration:EmailTemplates:ParentUpdatedFundings",
+                          "value": "[parameters('serviceConfigEmailParentUpdatedFunding')]"
+                        },
+                        {
+                          "name": "ServiceConfiguration:EmailTemplates:ParentNewAndUpdatedFundings",
+                          "value": "[parameters('serviceConfigEmailParentNewUpdatedFunding')]"
+                        },                        
+                        {
+                          "name": "ServiceConfiguration:FundingFilterVariationReasons",
+                          "value": "[parameters('serviceConfigFundingFilterVariationReasons')]"
+                        },                       
+                        {
+                          "name": "TimerInterval",
+                          "value": "[parameters('timerInterval')]"
+                        }
+                      ]
+                    }
+                }
+            },
+            "dependsOn": [
+                "app-service-plan"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "[concat(variables('AppServicePlanName'), '-metric-', tolower(variables('AppServicePlanMetricsToAlertUpon')[copyIndex()].MetricName))]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'), 'alert-rules.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "enabled": {
+                        "value": "[variables('EnableAlertsAndMetrics')]"
+                    },
+                    "alertName": {
+                        "value": "[concat(variables('AppServicePlanName'), '-metric-', tolower(variables('AppServicePlanMetricsToAlertUpon')[copyIndex()].MetricName))]"
+                    },
+                    "alertSeverity": {
+                        "value": 3
+                    },
+                    "metricName": {
+                        "value": "[variables('AppServicePlanMetricsToAlertUpon')[copyIndex()].MetricName]"
+                    },
+                    "operator": {
+                        "value": "[variables('AppServicePlanMetricsToAlertUpon')[copyIndex()].Operator]"
+                    },
+                    "threshold": {
+                        "value": "[variables('AppServicePlanMetricsToAlertUpon')[copyIndex()].Threshold]"
+                    },
+                    "aggregation": {
+                        "value": "[variables('AppServicePlanMetricsToAlertUpon')[copyIndex()].Aggregation]"
+                    },
+                    "windowSize": {
+                        "value": "[variables('AppServicePlanMetricsToAlertUpon')[copyIndex()].TimeWindow]"
+                    },
+                    "evaluationFrequency": {
+                        "value": "PT1M"
+                    },
+                    "actionGroupName": {
+                        "value": "[parameters('ActionGroupName')]"
+                    },
+                    "actionGroupResourceGroup": {
+                        "value": "[parameters('sharedResourceGroupName')]"
+                    },
+                    "resourceId": {
+                        "value": "[resourceId('Microsoft.Web/serverfarms', variables('AppServicePlanName'))]"
+                    }
+                }
+            },
+            "copy": {
+                "name": "AppServicePlanMetricCopy",
+                "count": "[length(variables('AppServicePlanMetricsToAlertUpon'))]"
+            },
+            "dependsOn": [
+                "app-service-plan"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "[concat(variables('functionAppServiceName'), '-metric-', tolower(variables('AppServiceMetricsToAlertUpon')[copyIndex()].MetricName))]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'), 'alert-rules.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "enabled": {
+                        "value": "[variables('EnableAlertsAndMetrics')]"
+                    },
+                    "alertName": {
+                        "value": "[concat(variables('functionAppServiceName'), '-metric-', tolower(variables('AppServiceMetricsToAlertUpon')[copyIndex()].MetricName))]"
+                    },
+                    "alertSeverity": {
+                        "value": 3
+                    },
+                    "metricName": {
+                        "value": "[variables('AppServiceMetricsToAlertUpon')[copyIndex()].MetricName]"
+                    },
+                    "operator": {
+                        "value": "[variables('AppServiceMetricsToAlertUpon')[copyIndex()].Operator]"
+                    },
+                    "threshold": {
+                        "value": "[variables('AppServiceMetricsToAlertUpon')[copyIndex()].Threshold]"
+                    },
+                    "aggregation": {
+                        "value": "[variables('AppServiceMetricsToAlertUpon')[copyIndex()].Aggregation]"
+                    },
+                    "windowSize": {
+                        "value": "[variables('AppServiceMetricsToAlertUpon')[copyIndex()].TimeWindow]"
+                    },
+                    "evaluationFrequency": {
+                        "value": "PT1M"
+                    },
+                    "actionGroupName": {
+                        "value": "[parameters('ActionGroupName')]"
+                    },
+                    "actionGroupResourceGroup": {
+                        "value": "[parameters('sharedResourceGroupName')]"
+                    },
+                    "resourceId": {
+                        "value": "[resourceId('Microsoft.Web/sites', variables('functionAppServiceName'))]"
+                    }
+                }
+            },
+            "copy": {
+                "name": "AppServiceMetricCopy",
+                "count": "[length(variables('AppServiceMetricsToAlertUpon'))]"
+            },
+            "dependsOn": [
+                "app-service"
+            ]
+        }
+    ],
+    "outputs": {
+        "AppServiceName": {
+            "type": "string",
+            "value": "[variables('functionAppServiceName')]"
+        }
+    }
+}
