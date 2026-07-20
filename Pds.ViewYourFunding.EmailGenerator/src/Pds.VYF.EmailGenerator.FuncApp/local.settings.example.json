@@ -1,19 +1,17 @@
 {
   "IsEncrypted": false,
   "Values": {
-    "APPINSIGHTS_INSTRUMENTATIONKEY": "",
-    "ASPNETCORE_ENVIRONMENT": "Staging",
     "AzureStorageConfiguration:ChildAuditTableName": "",
     "AzureStorageConfiguration:ConnectionString": "",
     "AzureStorageConfiguration:ControlTableName": "",
     "AzureStorageConfiguration:MaxPerPage": "50",
-    "AzureStorageConfiguration:NotifyServiceTemplateTable": "NotifyServiceTemplateDetails",
+    "AzureStorageConfiguration:NotifyServiceTemplateTable": "",
     "AzureStorageConfiguration:ParentAuditTableName": "",
-    "AzureWebJobsStorage": "",
-    "AzureWebJobsDashboard": "",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
     "CosmosDBConfiguration:AccountEndpoint": "",
     "CosmosDBConfiguration:AccountKey": "",
-    "CosmosDBConfiguration:AuditCollectionName": "audit",
+    "CosmosDBConfiguration:AuditCollectionName": "",
     "CosmosDBConfiguration:Database": "",
     "CosmosDBConfiguration:FundingGroupCollectionName": "",
     "CosmosDBConfiguration:MaxItemCount": "100",
@@ -50,8 +48,6 @@
     "VYFUIApiConfiguration:ApiKey": "",
     "VYFUIApiConfiguration:BaseUri": "",
     "VYFUIApiConfiguration:EmailEnabledFundingStreamAndPeriodsEndpointUri": "",
-    "VYFUIApiConfiguration:LatestFundingStreamPublishedDateEndpointUri": "",
-    "WEBSITE_ENABLE_SYNC_UPDATE_SITE": "true",
-    "WEBSITE_RUN_FROM_PACKAGE": "1"
+    "VYFUIApiConfiguration:LatestFundingStreamPublishedDateEndpointUri": ""
   }
 }

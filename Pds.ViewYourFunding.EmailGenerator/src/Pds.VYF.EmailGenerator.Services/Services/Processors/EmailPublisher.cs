@@ -2,7 +2,6 @@
 // Copyright (c) Department for Education - Skill Funding Services. All rights reserved.
 // </copyright>
 
-using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Pds.Core.DfESignIn.Interfaces;
 using Pds.Core.Notification.Interfaces;
@@ -15,6 +14,7 @@ using Pds.VYF.EmailGenerator.Services.Extensions;
 using Pds.VYF.EmailGenerator.Services.Models.AzureTableModels;
 using Pds.VYF.EmailGenerator.Services.Models.ConfigurationSettings;
 using Pds.VYF.EmailGenerator.Services.Models.Requests;
+using System.Collections.Concurrent;
 
 namespace Pds.VYF.EmailGenerator.Services.Services.Processors
 {

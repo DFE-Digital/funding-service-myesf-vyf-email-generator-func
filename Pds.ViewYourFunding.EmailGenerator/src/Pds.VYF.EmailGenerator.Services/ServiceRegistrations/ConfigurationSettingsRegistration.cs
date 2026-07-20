@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Pds.Core.DfESignIn.Models;
 using Pds.VYF.EmailGenerator.Services.Extensions;
 using Pds.VYF.EmailGenerator.Services.Models.ConfigurationSettings;

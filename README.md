@@ -1,18 +1,16 @@
-# Manage Your Education and Skills Funding User Interface
+# Manage Your Education and Skills Funding View Your Funding Email Generator
 
-The Manage Your Education and Skills Funding (MYESF) email generator allows the following:
-
-- Generate emails
-- ??
+The Manage Your Education and Skills Funding (MYESF) View Your Funding (VYF) Email Generator is a service that generates emails to notify providers of new or updated funding information. The service will:
+- Generate email notification messages for providers when new funding is published or when existing funding is updated.
+- Which will then be sent to the [MYESF Shared Email Processor](https://github.com/DFE-Digital/funding-service-myesf-shared-email-processor-func) for processing via GOV.UK Notify.
+- 
 ## Provider
 
 [The Department for Education](https://www.gov.uk/government/organisations/department-for-education)
 
 ## About this project
 
-This project is an ASP.NET Core 8 web api utilising Azure App Service for deployment.
-
-The web api runs on an Azure App service on Azure.
+This project is a .Net 8 Isolated Worker Azure Function project utilizing an Azure Function App for deployment.
 
 **Note:** The project is currently being updated to be containerised via Docker where the deployment method and target will change, this document will be updated when these changes have been finalised.
 
@@ -26,19 +24,17 @@ In order to run the application locally a valid `local.settings.json` file will 
 {
   "IsEncrypted": false,
   "Values": {
-    "APPINSIGHTS_INSTRUMENTATIONKEY": "",
-    "ASPNETCORE_ENVIRONMENT": "Staging",
     "AzureStorageConfiguration:ChildAuditTableName": "",
     "AzureStorageConfiguration:ConnectionString": "",
     "AzureStorageConfiguration:ControlTableName": "",
     "AzureStorageConfiguration:MaxPerPage": "50",
-    "AzureStorageConfiguration:NotifyServiceTemplateTable": "NotifyServiceTemplateDetails",
+    "AzureStorageConfiguration:NotifyServiceTemplateTable": "",
     "AzureStorageConfiguration:ParentAuditTableName": "",
-    "AzureWebJobsStorage": "",
-    "AzureWebJobsDashboard": "",
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
     "CosmosDBConfiguration:AccountEndpoint": "",
     "CosmosDBConfiguration:AccountKey": "",
-    "CosmosDBConfiguration:AuditCollectionName": "audit",
+    "CosmosDBConfiguration:AuditCollectionName": "",
     "CosmosDBConfiguration:Database": "",
     "CosmosDBConfiguration:FundingGroupCollectionName": "",
     "CosmosDBConfiguration:MaxItemCount": "100",
@@ -75,65 +71,57 @@ In order to run the application locally a valid `local.settings.json` file will 
     "VYFUIApiConfiguration:ApiKey": "",
     "VYFUIApiConfiguration:BaseUri": "",
     "VYFUIApiConfiguration:EmailEnabledFundingStreamAndPeriodsEndpointUri": "",
-    "VYFUIApiConfiguration:LatestFundingStreamPublishedDateEndpointUri": "",
-    "WEBSITE_ENABLE_SYNC_UPDATE_SITE": "true",
-    "WEBSITE_RUN_FROM_PACKAGE": "1"
+    "VYFUIApiConfiguration:LatestFundingStreamPublishedDateEndpointUri": ""
   }
 }
 ```
 
 ### Setting Details
 
-- **`APPINSIGHTS_INSTRUMENTATIONKEY`**  
-  Unique string key for app insights.
- 
-- **`ASPNETCORE_ENVIRONMENT`**  
-  Target environment.
-
 - **`AzureStorageConfiguration:ChildAuditTableName`**  
-  Azure storage table name for childaudit.
+  The table name of the Azure storage child audit table.
 
 - **`AzureStorageConfiguration:ConnectionString`**  
-  Unique string key for azure storage connection.
+  The connection string of the Azure storage account resource.
 
 - **`AzureStorageConfiguration:ControlTableName`**  
-  Azure storage table name for control table.
+  The table name of the Azure storage email generator control table.
 
 - **`AzureStorageConfiguration:MaxPerPage`**  
-  Maximum numeric value for azure storage.
+  The value of the maximum number of results contained in a page.
 
 - **`AzureStorageConfiguration:NotifyServiceTemplateTable`**  
-  Azure storage table name for NotifyServiceTemplate table.
+  The table name of the Azure storage notify service template details table.
 
 - **`AzureStorageConfiguration:ParentAuditTableName`**  
-  Azure storage table name for ParentAudit table.
+  The table name of the Azure storage parent audit table.
 
 - **`AzureWebJobsStorage`**  
-  Unique connection string key for azure web jobs storage.
+  The Azure Storage connection string required by the Azure Functions runtime for operation and trigger management.
   
 - **`AzureWebJobsDashboard`**  
-  Indicate which storage environment to use.
+  The Azure Storage jobs dashboard configuration setting to resolve issues with local running.
 
 - **`CosmosDBConfiguration:AccountEndpoint`**  
-  A unique link to cosmosdb account endpoint.
+  The url of the Cosmos Db resource.
 
 - **`CosmosDBConfiguration:AccountKey`**  
-  The connection string value used for accessing the VYF cosmos db service.
+  The unique connection key of the Cosmos Db resource.
   
 - **`CosmosDBConfiguration:AuditCollectionName`**  
-  The name of the cosmos db collection used for audit purposes.
+  The name of the Cosmos Db collection used for audit purposes.
   
 - **`CosmosDBConfiguration:Database`**  
-  The name of the cosmos database to connect to.
+  The name of the Cosmos Db database.
   
 - **`CosmosDBConfiguration:FundingGroupCollectionName`**  
-  The name of the cosmos db collection used for funding group collection data.
+  The name of the Cosmos Db collection used for funding data.
   
 - **`CosmosDBConfiguration:MaxItemCount`**  
-  MAximum amount of items to go through in database.
+  The value of the maximum amount of records to be returned from the Cosmos query.
   
 - **`CosmosDBConfiguration:ProviderFundingCollectionName`**  
-  The name of the cosmos db collection used for provider funding data.
+  The name of the Cosmos Db collection used for provider funding data.
   
 - **`DfeSignIn:OpenIDConnect:Authority`**  
   The authority URL for DfE sign in Open ID Connect service.
@@ -148,10 +136,10 @@ In order to run the application locally a valid `local.settings.json` file will 
   The url used to access DfE sign in public api service.
 
 - **`FUNCTIONS_EXTENSION_VERSION`**  
-  Extentions version for functions.
+  The Azure Functions runtime version used by the application.
   
 - **`FUNCTIONS_WORKER_RUNTIME`**  
-  functions worker runtime.
+  The worker runtime used by the Function App. This application uses the .NET Isolated worker model.
 
 - **`Logging:ApplicationInsights:LogLevel:Default`**
   The default logging level for the service when logging to Application Insights; refer to the [Microsoft Documentation](https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.loglevel?view=net-9.0-pp) for an explanation of the different levels.
@@ -166,85 +154,84 @@ In order to run the application locally a valid `local.settings.json` file will 
   The environment which the app is running on for Application Insights for logging purposes.
   
 - **`PdsApplicationInsights:InstrumentationKey`**  
-  The key value for Application Insights resource for logging purposes.
+  The key for Application Insights resource for logging purposes.
 
 - **`ServiceBusClientConfiguration:QueueName`**  
-  Service bus queue name.
+  The name of the service bus queue to send the email notification message to.
   
 - **`ServiceBusClientConfiguration:ServiceBusConnection`**  
-  Unique connection string for service bus connection.
+  The connection string of the Service Bus resource.
 
 - **`ServiceConfiguration:EmailPublishedBatchSize`**  
-  Numeric value for email batch size.
+  The value of the number of emails which will be generated within one batch during the generation process.
   
 - **`ServiceConfiguration:EmailRunMode`**  
-  Mode under which to run (test/dev,etc).
+  The conditional value for how the generation process should handle emails recipients based on environment.
 
-- **`ServiceConfiguration:EmailTemplates:ChildNewFunding`**  
-  Unique string for ChildNewFunding template.
+  - **`ServiceConfiguration:EmailTemplates:ChildNewFunding`**  
+  The template id for the ChildNewFunding email template.
   
 - **`ServiceConfiguration:EmailTemplates:ChildUpdatedFunding`**  
-  Unique string for ChildUpdatedFunding template.
+  The template id for the ChildUpdatedFunding email template.
 
 - **`ServiceConfiguration:EmailTemplates:ParentNewAndUpdatedFundings`**  
-  Unique string for ParentNewAndUpdatedFundings template.
+  The template id for the ParentNewAndUpdatedFundings email template.
 
 - **`ServiceConfiguration:EmailTemplates:ParentNewFundings`**  
-  Unique string for ParentNewFundings template.
+  The template id for the ParentNewFundings email template.
 
 - **`ServiceConfiguration:EmailTemplates:ParentUpdatedFundings`**  
-  Unique string for ParentUpdatedFundings template.
+  The template id for the ParentUpdatedFundings email template.
 
 - **`ServiceConfiguration:FundingFilterVariationReasons`**  
-  List of strings of variation reasons seperated by a comma.
+  The comma seperated list value of the funding variation reasons which depict whether an email should be generated.
 
 - **`ServiceConfiguration:InternalEmailAddresses`**  
-  Internal user email address.
+  The email address used for internal email notifications.
 
 - **`ServiceConfiguration:NotifyApiKeySecretName`**  
-  Secret name for NotifyApi.
+  The value of the notify api key paramter used in the email notification message.
 
 - **`ServiceConfiguration:ParentSearchBatchSize`**  
-  Numeric value of parent search batch.
+  The value of the number of parent providers which will be searched within one batch during the generation process.
   
 - **`ServiceConfiguration:RequestingService`**  
-  Velue for service request.
+  The value of the requesting service parameter used in the email notification message.
   
 - **`ServiceConfiguration:TestEmailAddresses`**  
-  Internal user email address.
+  The email address used when the function app is configured to run in `Test` mode.
 
 - **`ServiceConfiguration:UIBaseUri`**  
-  Unique UI link.
+  The value of the MYESF UI url parameter used in the email notification message.
   
 - **`ServiceConfiguration:UIChildUrl`**  
-  Unique url path for child url.
+  The value of the MYESF UI child provider view url parameter used in the email notification message.
   
 - **`ServiceConfiguration:UIParentUrl`**  
-  Unique url path for child url.
+  The value of the MYESF UI parent provider view url parameter used in the email notification message.
   
 - **`TimerInterval`**  
-  Allowed time intervals to use.
+  The CRON expression defining the schedule used by the timer-triggered email generation process.
   
 - **`VYFUIApiConfiguration:ApiKey`**  
-  Unique microsoft keyvault value.
+  The api secret key of View Your Funding external api.
 
 - **`VYFUIApiConfiguration:BaseUri`**  
-  Unique url path base uri.
+  The url of View Your Funding external api.
   
 - **`VYFUIApiConfiguration:EmailEnabledFundingStreamAndPeriodsEndpointUri`**  
-  Unique url path for EmailEnabledFundingStreamAndPeriodsEndpointUri.
+  The url of View Your Funding external api email enabled funding stream endpoint.
 
 - **`VYFUIApiConfiguration:LatestFundingStreamPublishedDateEndpointUri`**  
-  Unique url path for LatestFundingStreamPublishedDateEndpointUri.
-  
-- **`WEBSITE_ENABLE_SYNC_UPDATE_SITE`**  
-  Boolean value for enabling sync updates.
+  The url of View Your Funding external api latest funding stream published date endpoint.
 
-- **`WEBSITE_RUN_FROM_PACKAGE`**  
-  Number of package to run.
+## Build and Test
 
-## Test execution
+To build and test locally, you can either use Visual Studio, Visual Studio Code or simply use dotnet CLI `dotnet build` and `dotnet test` more information in dotnet CLI can be found at <https://docs.microsoft.com/en-us/dotnet/core/tools/>.
 
-### Pds.VYF.EmailGenerator.Services.Tests
+## Contribute
 
-All the tests can be found in Pds.VYF.EmailGenerator.Services.Tests. There are no local settings files required for tests.
+To contribute,
+
+- If you are part of the team then create a branch for changes and then submit your changes for review by creating a pull request.
+- If you are external to the organisation then fork this repository and make necessary changes and then submit your changes for review by creating a pull request.

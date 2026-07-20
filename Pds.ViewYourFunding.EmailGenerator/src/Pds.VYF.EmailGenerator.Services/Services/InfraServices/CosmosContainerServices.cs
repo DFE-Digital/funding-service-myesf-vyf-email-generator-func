@@ -2,13 +2,13 @@
 // Copyright (c) Department for Education - Skill Funding Services. All rights reserved.
 // </copyright>
 
-using System.Diagnostics;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 using Pds.VYF.EmailGenerator.Services.Abstract.InfraServices;
 using Pds.VYF.EmailGenerator.Services.Enumerations;
 using Pds.VYF.EmailGenerator.Services.Models.ConfigurationSettings;
 using Pds.VYF.EmailGenerator.Services.Models.Responses;
+using System.Diagnostics;
 
 namespace Pds.VYF.EmailGenerator.Services.Services.InfraServices
 {

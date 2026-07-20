@@ -2,9 +2,9 @@
 // Copyright (c) Department for Education - Skill Funding Services. All rights reserved.
 // </copyright>
 
-using System.Linq.Expressions;
 using Azure.Data.Tables;
 using Pds.VYF.EmailGenerator.Services.Models.AzureTableModels;
+using System.Linq.Expressions;
 
 namespace Pds.VYF.EmailGenerator.Services.Abstract.InfraServices
 {

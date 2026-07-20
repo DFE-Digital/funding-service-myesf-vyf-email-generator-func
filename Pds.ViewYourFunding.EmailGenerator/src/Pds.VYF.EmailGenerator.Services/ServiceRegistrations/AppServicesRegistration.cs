@@ -4,10 +4,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Pds.VYF.EmailGenerator.Services.Abstract.ApiConnectors;
 using Pds.VYF.EmailGenerator.Services.Abstract.Controllers;
 using Pds.VYF.EmailGenerator.Services.Abstract.Processors;
-using Pds.VYF.EmailGenerator.Services.Services.ApiConnectors;
 using Pds.VYF.EmailGenerator.Services.Services.Controllers;
 using Pds.VYF.EmailGenerator.Services.Services.Processors;
 

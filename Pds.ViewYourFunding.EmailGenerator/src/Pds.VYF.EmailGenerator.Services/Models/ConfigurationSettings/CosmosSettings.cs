@@ -2,8 +2,8 @@
 // Copyright (c) Department for Education - Skill Funding Services. All rights reserved.
 // </copyright>
 
-using System.ComponentModel.DataAnnotations;
 using Microsoft.Azure.Cosmos;
+using System.ComponentModel.DataAnnotations;
 
 namespace Pds.VYF.EmailGenerator.Services.Models.ConfigurationSettings
 {

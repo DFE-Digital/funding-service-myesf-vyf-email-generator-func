@@ -2,7 +2,6 @@
 // Copyright (c) Department for Education - Skill Funding Services. All rights reserved.
 // </copyright>
 
-using System.Linq;
 using System.Text;
 
 namespace Pds.VYF.EmailGenerator.Services.Extensions
