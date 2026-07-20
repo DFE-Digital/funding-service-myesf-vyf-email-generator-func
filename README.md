@@ -3,7 +3,7 @@
 The Manage Your Education and Skills Funding (MYESF) View Your Funding (VYF) Email Generator is a service that generates emails to notify providers of new or updated funding information. The service will:
 - Generate email notification messages for providers when new funding is published or when existing funding is updated.
 - Which will then be sent to the [MYESF Shared Email Processor](https://github.com/DFE-Digital/funding-service-myesf-shared-email-processor-func) for processing via GOV.UK Notify.
-- 
+
 ## Provider
 
 [The Department for Education](https://www.gov.uk/government/organisations/department-for-education)
@@ -168,7 +168,7 @@ In order to run the application locally a valid `local.settings.json` file will 
 - **`ServiceConfiguration:EmailRunMode`**  
   The conditional value for how the generation process should handle emails recipients based on environment.
 
-  - **`ServiceConfiguration:EmailTemplates:ChildNewFunding`**  
+- **`ServiceConfiguration:EmailTemplates:ChildNewFunding`**  
   The template id for the ChildNewFunding email template.
   
 - **`ServiceConfiguration:EmailTemplates:ChildUpdatedFunding`**  
