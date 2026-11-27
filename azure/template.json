@@ -293,11 +293,11 @@
                           "value": "dotnet-isolated"
                         },
                         {
-                          "name": "ServiceBusClientConfiguration:ServiceBusConnection",
+                          "name": "NotificationServiceBusOptions:ConnectionString",
                           "value": "[listKeys(resourceId(parameters('sharedResourceGroupName'),'Microsoft.ServiceBus/namespaces/AuthorizationRules',parameters('sharedServiceBusName'), parameters('serviceBusAccessKeyName')),'2015-08-01').primaryConnectionString]"
                         },
                         {
-                          "name": "ServiceBusClientConfiguration:QueueName",
+                          "name": "NotificationServiceBusOptions:ServiceBusQueueName",
                           "value": "[parameters('queueName')]"
                         },
                         {

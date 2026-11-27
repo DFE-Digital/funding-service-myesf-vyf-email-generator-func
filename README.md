@@ -49,8 +49,8 @@ In order to run the application locally a valid `local.settings.json` file will 
     "Logging:LogLevel:Default": "Information",
     "PdsApplicationInsights:Environment": "",
     "PdsApplicationInsights:InstrumentationKey": "",
-    "ServiceBusClientConfiguration:QueueName": "",
-    "ServiceBusClientConfiguration:ServiceBusConnection": "",
+    "NotificationServiceBusOptions:ServiceBusQueueName": "",
+    "NotificationServiceBusOptions:ConnectionString": "",
     "ServiceConfiguration:EmailPublishedBatchSize": "50",
     "ServiceConfiguration:EmailRunMode": "Test",
     "ServiceConfiguration:EmailTemplates:ChildNewFunding": "",
@@ -156,11 +156,11 @@ In order to run the application locally a valid `local.settings.json` file will 
 - **`PdsApplicationInsights:InstrumentationKey`**  
   The key for Application Insights resource for logging purposes.
 
-- **`ServiceBusClientConfiguration:QueueName`**  
+- **`NotificationServiceBusOptions:ServiceBusQueueName`**  
   The name of the service bus queue to send the email notification message to.
   
-- **`ServiceBusClientConfiguration:ServiceBusConnection`**  
-  The connection string of the Service Bus resource.
+- **`NotificationServiceBusOptions:ConnectionString`**  
+  The connection string of the notification Service Bus resource.
 
 - **`ServiceConfiguration:EmailPublishedBatchSize`**  
   The value of the number of emails which will be generated within one batch during the generation process.
