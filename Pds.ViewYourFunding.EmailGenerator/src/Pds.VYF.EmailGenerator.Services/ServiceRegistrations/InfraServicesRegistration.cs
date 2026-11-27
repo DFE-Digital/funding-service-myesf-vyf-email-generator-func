@@ -40,7 +40,7 @@ namespace Pds.VYF.EmailGenerator.Services.ServiceRegistrations
                     .AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))));
 
             // Configure PDS Packages Shared Components.
-            services.AddNotificationClient(a => configuration.Bind(nameof(ServiceBusClientConfiguration), a));
+            services.AddNotificationClient(configuration);
 
             services.AddHttpClient<IDfESignInPublicApi, DfESignInPublicApi>()
                     .AddTransientHttpErrorPolicy(p => p.WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))));

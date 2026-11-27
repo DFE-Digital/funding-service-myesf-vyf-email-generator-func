@@ -2,8 +2,8 @@
 // Copyright (c) Department for Education - Skill Funding Services. All rights reserved.
 // </copyright>
 
-using Microsoft.Azure.Cosmos;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.Azure.Cosmos;
 
 namespace Pds.VYF.EmailGenerator.Services.Models.ConfigurationSettings
 {
@@ -87,7 +87,6 @@ namespace Pds.VYF.EmailGenerator.Services.Models.ConfigurationSettings
         /// The connection mode.
         /// </value>
         public ConnectionMode ConnectionMode { get; set; } = ConnectionMode.Direct;
-
 
         /// <summary>
         /// Gets or sets the high throughput.
