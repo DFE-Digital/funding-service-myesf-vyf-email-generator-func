@@ -2,12 +2,12 @@
 // Copyright (c) Department for Education - Skill Funding Services. All rights reserved.
 // </copyright>
 
+using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Pds.VYF.EmailGenerator.Services.Abstract.Controllers;
-using System.Diagnostics;
 
 namespace Pds.VYF.EmailGenerator.FuncApp.AppFunctions
 {

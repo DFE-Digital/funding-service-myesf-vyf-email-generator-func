@@ -2,6 +2,7 @@
 // Copyright (c) Department for Education - Skill Funding Services. All rights reserved.
 // </copyright>
 
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Pds.VYF.EmailGenerator.Services.Abstract.ApiConnectors;
 using Pds.VYF.EmailGenerator.Services.Abstract.Controllers;
@@ -10,7 +11,6 @@ using Pds.VYF.EmailGenerator.Services.Abstract.Processors;
 using Pds.VYF.EmailGenerator.Services.Enumerations;
 using Pds.VYF.EmailGenerator.Services.Extensions;
 using Pds.VYF.EmailGenerator.Services.Models.Requests;
-using System.Diagnostics;
 
 namespace Pds.VYF.EmailGenerator.Services.Services.Controllers
 {
